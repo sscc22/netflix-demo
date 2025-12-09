@@ -197,7 +197,7 @@ const SignIn = () => {
           </div>
         </div>
 
-        <div className="info-box">
+        {/* <div className="info-box">
           <h3><i className="fas fa-info-circle"></i> Notice</h3>
           <p>Please use your TMDB API Key as the password.</p>
           <p>You can get your API key from:</p>
@@ -209,7 +209,7 @@ const SignIn = () => {
           >
             <i className="fas fa-external-link-alt"></i> Get TMDB API Key
           </a>
-        </div>
+        </div> */}
       </div>
     </div>
   );

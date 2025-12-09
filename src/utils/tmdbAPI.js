@@ -4,7 +4,7 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
 const getApiKey = () => {
-  return localStorage.getItem('TMDb-Key') || '';
+  return '87f58b2fd5477e14aae3aff6029ef584'; //localStorage.getItem('TMDb-Key') || '';
 };
 
 export const getImageUrl = (path, size = 'w500') => {
