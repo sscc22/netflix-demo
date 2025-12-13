@@ -3,8 +3,11 @@ import axios from 'axios';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
+// 환경 변수에서 API Key 가져오기
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+
 const getApiKey = () => {
-  return '87f58b2fd5477e14aae3aff6029ef584'; //localStorage.getItem('TMDb-Key') || '';
+  return API_KEY || '';
 };
 
 export const getImageUrl = (path, size = 'w500') => {
@@ -14,6 +17,12 @@ export const getImageUrl = (path, size = 'w500') => {
 
 export const fetchMovies = async (endpoint, page = 1) => {
   const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    console.error('TMDB API Key is not set. Please add VITE_TMDB_API_KEY to your .env file');
+    throw new Error('API Key not configured');
+  }
+  
   try {
     const response = await axios.get(`${BASE_URL}${endpoint}`, {
       params: {
@@ -47,6 +56,11 @@ export const getUpcomingMovies = (page = 1) => {
 
 export const searchMovies = async (query, page = 1) => {
   const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    throw new Error('API Key not configured');
+  }
+  
   try {
     const response = await axios.get(`${BASE_URL}/search/movie`, {
       params: {
@@ -65,6 +79,11 @@ export const searchMovies = async (query, page = 1) => {
 
 export const getMoviesByGenre = async (genreId, page = 1) => {
   const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    throw new Error('API Key not configured');
+  }
+  
   try {
     const response = await axios.get(`${BASE_URL}/discover/movie`, {
       params: {
@@ -83,6 +102,11 @@ export const getMoviesByGenre = async (genreId, page = 1) => {
 
 export const getGenres = async () => {
   const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    throw new Error('API Key not configured');
+  }
+  
   try {
     const response = await axios.get(`${BASE_URL}/genre/movie/list`, {
       params: {

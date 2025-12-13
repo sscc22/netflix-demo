@@ -1,6 +1,5 @@
 // Authentication utilities for user login and registration
 const USERS_KEY = 'users';
-const TMDB_KEY = 'TMDb-Key';
 const CURRENT_USER_KEY = 'currentUser';
 const REMEMBER_ME_KEY = 'rememberMe';
 
@@ -9,7 +8,6 @@ export const tryLogin = (email, password, success, fail) => {
   const user = users.find(u => u.id === email && u.password === password);
   
   if (user) {
-    localStorage.setItem(TMDB_KEY, user.password);
     localStorage.setItem(CURRENT_USER_KEY, email);
     success(user);
   } else {
@@ -43,7 +41,6 @@ export const logout = () => {
   const rememberMe = localStorage.getItem(REMEMBER_ME_KEY);
   if (!rememberMe) {
     localStorage.removeItem(CURRENT_USER_KEY);
-    localStorage.removeItem(TMDB_KEY);
   }
 };
 

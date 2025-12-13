@@ -62,8 +62,8 @@ const SignIn = () => {
       return;
     }
 
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters');
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
       return;
     }
 
@@ -129,7 +129,7 @@ const SignIn = () => {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password (TMDB API Key)"
+                placeholder="Enter your password"
                 required
               />
             </div>
@@ -197,19 +197,28 @@ const SignIn = () => {
           </div>
         </div>
 
-        {/* <div className="info-box">
-          <h3><i className="fas fa-info-circle"></i> Notice</h3>
-          <p>Please use your TMDB API Key as the password.</p>
-          <p>You can get your API key from:</p>
-          <a 
-            href="https://www.themoviedb.org/settings/api" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="tmdb-link"
-          >
-            <i className="fas fa-external-link-alt"></i> Get TMDB API Key
-          </a>
-        </div> */}
+        <div className="info-box">
+          <h3><i className="fas fa-info-circle"></i> Welcome!</h3>
+          <p>Create an account or sign in to explore thousands of movies.</p>
+          <div className="features-list">
+            <div className="feature-item">
+              <i className="fas fa-film"></i>
+              <span>Browse Popular Movies</span>
+            </div>
+            <div className="feature-item">
+              <i className="fas fa-search"></i>
+              <span>Search & Filter</span>
+            </div>
+            <div className="feature-item">
+              <i className="fas fa-heart"></i>
+              <span>Create Wishlist</span>
+            </div>
+            <div className="feature-item">
+              <i className="fas fa-star"></i>
+              <span>View Ratings</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
