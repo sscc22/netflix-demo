@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
-import { getMoviesByGenre, getGenres, getPopularMovies } from '../utils/tmdbAPI';
+import { getMoviesByGenre, getGenres, getPopularMovies, searchMovies } from '../utils/tmdbAPI';
 import './Search.css';
 
 const Search = () => {
   const [movies, setMovies] = useState([]);
   const [genres, setGenres] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
   const [sortBy, setSortBy] = useState('popularity.desc');
   const [minRating, setMinRating] = useState(0);
@@ -31,7 +32,10 @@ const Search = () => {
       setLoading(true);
       let data;
       
-      if (selectedGenre) {
+      // 검색어가 있으면 검색 API 사용
+      if (searchQuery.trim()) {
+        data = await searchMovies(searchQuery);
+      } else if (selectedGenre) {
         data = await getMoviesByGenre(selectedGenre);
       } else {
         data = await getPopularMovies();
@@ -39,10 +43,12 @@ const Search = () => {
 
       let filteredMovies = data.results;
 
+      // 최소 평점 필터링
       if (minRating > 0) {
         filteredMovies = filteredMovies.filter(movie => movie.vote_average >= minRating);
       }
 
+      // 정렬
       filteredMovies = sortMovies(filteredMovies, sortBy);
 
       setMovies(filteredMovies);
@@ -75,13 +81,24 @@ const Search = () => {
   };
 
   useEffect(() => {
-    fetchMovies();
-  }, [selectedGenre, sortBy, minRating]);
+    // 검색어 입력 시 디바운스 적용
+    const timeoutId = setTimeout(() => {
+      fetchMovies();
+    }, 500); // 0.5초 대기
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, selectedGenre, sortBy, minRating]);
 
   const handleReset = () => {
+    setSearchQuery('');
     setSelectedGenre('');
     setSortBy('popularity.desc');
     setMinRating(0);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetchMovies();
   };
 
   const handleWishlistChange = () => {
@@ -96,6 +113,34 @@ const Search = () => {
         </h1>
       </div>
 
+      {/* 검색바 섹션 */}
+      <div className="search-bar-container">
+        <form onSubmit={handleSearch} className="search-form">
+          <div className="search-input-wrapper">
+            <i className="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search movies by title..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="clear-search-btn"
+                onClick={() => setSearchQuery('')}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            )}
+          </div>
+          <button type="submit" className="search-submit-btn">
+            <i className="fas fa-search"></i> Search
+          </button>
+        </form>
+      </div>
+
       <div className="filter-container">
         <div className="filter-section">
           <div className="filter-group">
@@ -107,6 +152,7 @@ const Search = () => {
               value={selectedGenre}
               onChange={(e) => setSelectedGenre(e.target.value)}
               className="filter-select"
+              disabled={searchQuery.trim() !== ''}
             >
               <option value="">All Genres</option>
               {genres.map(genre => (
@@ -115,6 +161,11 @@ const Search = () => {
                 </option>
               ))}
             </select>
+            {searchQuery.trim() !== '' && (
+              <small className="filter-disabled-note">
+                Genre filter disabled during search
+              </small>
+            )}
           </div>
 
           <div className="filter-group">
@@ -158,7 +209,7 @@ const Search = () => {
           </div>
 
           <button className="reset-btn" onClick={handleReset}>
-            <i className="fas fa-redo"></i> Reset Filters
+            <i className="fas fa-redo"></i> Reset All
           </button>
         </div>
       </div>
@@ -166,7 +217,9 @@ const Search = () => {
       <div className="results-container">
         <div className="results-header">
           <p className="results-count">
-            <i className="fas fa-check-circle"></i> Found {movies.length} movies
+            <i className="fas fa-check-circle"></i> 
+            {searchQuery ? ` Search results for "${searchQuery}": ` : ' Found '}
+            {movies.length} movies
           </p>
         </div>
 
@@ -189,9 +242,16 @@ const Search = () => {
         {!loading && movies.length === 0 && (
           <div className="no-results">
             <i className="fas fa-film-slash"></i>
-            <p>No movies found with the selected filters</p>
+            {searchQuery ? (
+              <>
+                <p>No movies found for "{searchQuery}"</p>
+                <p className="no-results-hint">Try searching with different keywords</p>
+              </>
+            ) : (
+              <p>No movies found with the selected filters</p>
+            )}
             <button className="btn btn-primary" onClick={handleReset}>
-              Reset Filters
+              Reset All
             </button>
           </div>
         )}
