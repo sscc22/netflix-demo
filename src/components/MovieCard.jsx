@@ -1,16 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { getImageUrl } from '../utils/tmdbAPI';
-import { toggleWishlist, isInWishlist } from '../utils/wishlist';
+import { toggleWishlist, isInWishlist } from '../utils/firebaseWishlist';
+import { getCurrentUser } from '../utils/firebaseAuth';
 import './MovieCard.css';
 
 const MovieCard = ({ movie, onWishlistChange }) => {
-  const inWishlist = isInWishlist(movie.id);
+  const [inWishlist, setInWishlist] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleWishlistToggle = (e) => {
+  useEffect(() => {
+    checkWishlistStatus();
+  }, [movie.id]);
+
+  const checkWishlistStatus = async () => {
+    const user = getCurrentUser();
+    if (user) {
+      const status = await isInWishlist(user.uid, movie.id);
+      setInWishlist(status);
+    }
+  };
+
+  const handleWishlistToggle = async (e) => {
     e.stopPropagation();
-    toggleWishlist(movie);
-    if (onWishlistChange) {
-      onWishlistChange();
+    
+    const user = getCurrentUser();
+    if (!user) {
+      alert('Please sign in to add movies to your wishlist');
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const result = await toggleWishlist(user.uid, movie);
+      
+      if (result.success) {
+        setInWishlist(!inWishlist);
+        if (onWishlistChange) {
+          onWishlistChange();
+        }
+      } else {
+        console.error('Error toggling wishlist:', result.error);
+        alert('Failed to update wishlist. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,11 +70,21 @@ const MovieCard = ({ movie, onWishlistChange }) => {
             </span>
           </div>
           <button 
-            className={`wishlist-btn ${inWishlist ? 'active' : ''}`}
+            className={`wishlist-btn ${inWishlist ? 'active' : ''} ${loading ? 'loading' : ''}`}
             onClick={handleWishlistToggle}
+            disabled={loading}
           >
-            <i className={`fas fa-heart ${inWishlist ? 'filled' : ''}`}></i>
-            {inWishlist ? 'Remove' : 'Add to Wishlist'}
+            {loading ? (
+              <>
+                <i className="fas fa-spinner fa-spin"></i>
+                <span>Processing...</span>
+              </>
+            ) : (
+              <>
+                <i className={`fas fa-heart ${inWishlist ? 'filled' : ''}`}></i>
+                <span>{inWishlist ? 'Remove' : 'Add to Wishlist'}</span>
+              </>
+            )}
           </button>
         </div>
       </div>

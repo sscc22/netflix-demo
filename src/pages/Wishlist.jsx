@@ -1,27 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
-import { getWishlist, clearWishlist } from '../utils/wishlist';
+import { getUserWishlist, clearWishlist } from '../utils/firebaseWishlist';
+import { getCurrentUser } from '../utils/firebaseAuth';
 import './Wishlist.css';
 
 const Wishlist = () => {
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [wishlistUpdate, setWishlistUpdate] = useState(0);
 
   useEffect(() => {
-    const wishlist = getWishlist();
-    setMovies(wishlist);
+    fetchWishlist();
   }, [wishlistUpdate]);
+
+  const fetchWishlist = async () => {
+    const user = getCurrentUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const wishlist = await getUserWishlist(user.uid);
+      // Firestore 데이터를 영화 객체 형태로 변환
+      const movieData = wishlist.map(item => ({
+        id: item.movieId,
+        title: item.title,
+        poster_path: item.poster_path,
+        vote_average: item.vote_average,
+        release_date: item.release_date,
+        overview: item.overview
+      }));
+      setMovies(movieData);
+    } catch (error) {
+      console.error('Error fetching wishlist:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleWishlistChange = () => {
     setWishlistUpdate(prev => prev + 1);
   };
 
-  const handleClearAll = () => {
-    if (window.confirm('Are you sure you want to clear all movies from your wishlist?')) {
-      clearWishlist();
-      setWishlistUpdate(prev => prev + 1);
+  const handleClearAll = async () => {
+    if (!window.confirm('Are you sure you want to clear all movies from your wishlist?')) {
+      return;
+    }
+
+    const user = getCurrentUser();
+    if (!user) return;
+
+    try {
+      const result = await clearWishlist(user.uid);
+      if (result.success) {
+        setWishlistUpdate(prev => prev + 1);
+        // Toast 알림
+        const toast = document.createElement('div');
+        toast.className = 'toast success';
+        toast.textContent = 'Wishlist cleared successfully!';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+    } catch (error) {
+      console.error('Error clearing wishlist:', error);
+      alert('Failed to clear wishlist. Please try again.');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="wishlist-page">
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="wishlist-page">

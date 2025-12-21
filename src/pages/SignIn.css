@@ -21,7 +21,7 @@
 .signin-container {
   display: flex;
   gap: 40px;
-  max-width: 1000px;
+  max-width: 1100px;
   width: 100%;
   animation: fadeIn 0.5s ease-out;
 }
@@ -39,28 +39,57 @@
 
 .signin-box {
   background: rgba(255, 255, 255, 0.95);
-  padding: 40px;
-  border-radius: 12px;
+  padding: 50px;
+  border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   flex: 1;
-  max-width: 450px;
-  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  max-width: 500px;
 }
 
-.signin-box.register-mode {
-  transform: rotateY(10deg) scale(1.02);
+.firebase-signin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .signin-header {
   text-align: center;
-  margin-bottom: 30px;
-  color: #333;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.logo-large {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.logo-large i {
+  font-size: 40px;
+  color: white;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+  }
 }
 
 .signin-header h1 {
-  font-size: 32px;
+  font-size: 28px;
   margin-bottom: 10px;
-  color: #667eea;
+  color: #333;
   animation: slideDown 0.6s ease-out;
 }
 
@@ -77,78 +106,8 @@
 
 .signin-header p {
   color: #666;
-  font-size: 16px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-  animation: slideUp 0.6s ease-out backwards;
-}
-
-.form-group:nth-child(1) { animation-delay: 0.1s; }
-.form-group:nth-child(2) { animation-delay: 0.2s; }
-.form-group:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: #333;
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.form-group label i {
-  margin-right: 8px;
-  color: #667eea;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  background-color: white;
-  color: #333;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  transform: translateY(-2px);
-}
-
-.form-options {
-  margin: 20px 0;
-  animation: slideUp 0.6s ease-out 0.4s backwards;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  color: #666;
-  font-size: 14px;
-}
-
-.checkbox-label input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .error-message {
@@ -160,6 +119,7 @@
   font-size: 14px;
   border-left: 4px solid #c00;
   animation: shake 0.5s ease;
+  width: 100%;
 }
 
 @keyframes shake {
@@ -168,104 +128,209 @@
   75% { transform: translateX(10px); }
 }
 
-.submit-btn {
+.google-signin-btn {
   width: 100%;
-  padding: 14px;
-  margin-top: 20px;
+  padding: 16px 24px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
   font-size: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  animation: slideUp 0.6s ease-out 0.5s backwards;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.submit-btn:hover {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+.google-signin-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
 }
 
-.signin-footer {
+.google-signin-btn:hover::before {
+  left: 100%;
+}
+
+.google-signin-btn:hover {
+  border-color: #4285F4;
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
+  transform: translateY(-2px);
+}
+
+.google-signin-btn:active {
+  transform: translateY(0);
+}
+
+.google-signin-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.google-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.btn-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.signin-divider {
+  width: 100%;
   text-align: center;
-  margin-top: 25px;
+  margin: 30px 0;
+  position: relative;
+}
+
+.signin-divider::before,
+.signin-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+.signin-divider::before {
+  left: 0;
+}
+
+.signin-divider::after {
+  right: 0;
+}
+
+.signin-divider span {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0 15px;
+  color: #999;
+  font-size: 13px;
+  position: relative;
+}
+
+.signin-features {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.signin-features .feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.signin-features .feature-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateX(5px);
+}
+
+.signin-features .feature-item i {
+  color: #667eea;
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.signin-features .feature-item span {
   color: #666;
   font-size: 14px;
-  animation: slideUp 0.6s ease-out 0.6s backwards;
-}
-
-.toggle-btn {
-  background: none;
-  border: none;
-  color: #667eea;
-  font-weight: 600;
-  cursor: pointer;
-  margin-left: 5px;
-  font-size: 14px;
-  transition: color 0.3s ease;
-}
-
-.toggle-btn:hover {
-  color: #764ba2;
-  text-decoration: underline;
 }
 
 .info-box {
   background: rgba(255, 255, 255, 0.95);
-  padding: 30px;
-  border-radius: 12px;
+  padding: 35px;
+  border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  flex: 0 0 300px;
+  flex: 0 0 350px;
   animation: fadeIn 0.5s ease-out 0.3s backwards;
 }
 
 .info-box h3 {
   color: #667eea;
-  margin-bottom: 15px;
-  font-size: 20px;
-}
-
-.info-box h3 i {
-  margin-right: 10px;
-}
-
-.info-box p {
-  color: #666;
-  margin-bottom: 20px;
-  line-height: 1.6;
+  margin-bottom: 25px;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .features-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
-.feature-item {
+.features-list .feature-item {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background-color: rgba(102, 126, 234, 0.05);
-  border-radius: 8px;
+  gap: 15px;
+  align-items: flex-start;
+  padding: 15px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 10px;
   transition: all 0.3s ease;
 }
 
-.feature-item:hover {
-  background-color: rgba(102, 126, 234, 0.1);
+.features-list .feature-item:hover {
+  background: rgba(102, 126, 234, 0.1);
   transform: translateX(5px);
 }
 
-.feature-item i {
+.features-list .feature-item i {
   color: #667eea;
-  font-size: 20px;
-  width: 24px;
+  font-size: 24px;
+  width: 30px;
   text-align: center;
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
-.feature-item span {
+.features-list .feature-item div {
+  flex: 1;
+}
+
+.features-list .feature-item strong {
+  display: block;
   color: #333;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 4px;
 }
 
-@media (max-width: 968px) {
+.features-list .feature-item p {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 1100px) {
   .signin-container {
     flex-direction: column;
     align-items: center;
@@ -274,19 +339,29 @@
   .signin-box,
   .info-box {
     max-width: 100%;
+    flex: 1 1 auto;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .signin-box {
-    padding: 30px 20px;
+    padding: 35px 25px;
   }
 
   .signin-header h1 {
-    font-size: 26px;
+    font-size: 24px;
   }
 
-  .form-group input {
-    padding: 10px 12px;
+  .info-box {
+    padding: 25px;
+  }
+
+  .logo-large {
+    width: 70px;
+    height: 70px;
+  }
+
+  .logo-large i {
+    font-size: 35px;
   }
 }

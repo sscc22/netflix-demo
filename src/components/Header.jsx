@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { isLoggedIn, getCurrentUser, logout } from '../utils/Authentication';
+import { logoutUser, onAuthChange } from '../utils/firebaseAuth';
 import './Header.css';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const loggedIn = isLoggedIn();
-  const currentUser = getCurrentUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,9 +18,20 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/signin');
+  useEffect(() => {
+    // Firebase 인증 상태 감지
+    const unsubscribe = onAuthChange((currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    const result = await logoutUser();
+    if (result.success) {
+      navigate('/signin');
+    }
   };
 
   return (
@@ -54,11 +64,22 @@ const Header = () => {
           </Link>
         </nav>
 
-        {loggedIn && (
+        {user && (
           <div className="user-section">
-            <span className="user-name">
-              <i className="fas fa-user-circle"></i> {currentUser}
-            </span>
+            <div className="user-profile">
+              {user.photoURL ? (
+                <img 
+                  src={user.photoURL} 
+                  alt={user.displayName} 
+                  className="user-avatar"
+                />
+              ) : (
+                <div className="user-avatar-placeholder">
+                  <i className="fas fa-user"></i>
+                </div>
+              )}
+              <span className="user-name">{user.displayName || user.email}</span>
+            </div>
             <button onClick={handleLogout} className="logout-btn">
               <i className="fas fa-sign-out-alt"></i> Logout
             </button>
